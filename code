@@ -1,0 +1,42 @@
+import speech_recognition as sr
+import pyttsx3
+
+# हिंदी में बोलने के लिए इंजन सेट करें
+engine = pyttsx3.init()
+engine.setProperty('rate', 150)  # बोलने की स्पीड
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[0].id)  # डिफ़ॉल्ट वॉइस
+
+def bol(text):
+    print("राज:", text)
+    engine.say(text)
+    engine.runAndWait()
+
+def suno():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("आप बोलिए...")
+        audio = r.listen(source)
+        try:
+            query = r.recognize_google(audio, language='hi-IN')
+            print("आपने कहा:", query)
+            return query
+        except:
+            bol("माफ कीजिए, मैं समझ नहीं पाया।")
+            return ""
+
+def assistant():
+    bol("नमस्ते! मैं राज हूँ, आपका सहायक। आप क्या करना चाहेंगे?")
+    while True:
+        command = suno().lower()
+        if "समय" in command:
+            from datetime import datetime
+            bol("अभी समय है: " + datetime.now().strftime("%H:%M"))
+        elif "बंद" in command or "रुको" in command:
+            bol("ठीक है, मैं बंद हो रहा हूँ। धन्यवाद!")
+            break
+        else:
+            bol("यह कमांड मेरे लिए नई है, कृपया फिर से बोलें।")
+
+# चलाइए असिस्टेंट
+assistant()
